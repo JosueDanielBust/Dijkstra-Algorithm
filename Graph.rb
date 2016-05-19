@@ -10,12 +10,16 @@ class Graph
 	# two verts and a distance of this verts
 	# Struct of array => Array[Array[vert1, vert2, dist], Array[...]]
 	def initialize(graph)
+		# Create the list of vertices into Graph class
 		@verts = Hash.new do |key, value|
 			key[value] = Vertex.new(value, [], Float::INFINITY)
 		end
-
+		# Create the edges or conections for vertice to vertice
 		@edges = {}
 
+		# Evaluate each Array into the graph Array (Attribute)
+		# Flip-Flop documentation
+		# http://ruby-doc.org/core-2.3.1/doc/syntax/control_expressions_rdoc.html#label-Flip-Flop
 		graph.each do |(vert1, vert2, dist)|
 			@verts[vert1].near << vert2
 			@verts[vert2].near << vert1
@@ -25,21 +29,26 @@ class Graph
 		@dijkstra_source = nil
 	end
 
+	# Lets do it with Dijkstra Algorithm!
 	def dijkstra(source)
 		return if @dijkstra_source == source
 
+		# For each vert on @verts assign the weight Infinity and prev null
 		queue = @verts.values
 		queue.each do |vert|
 			vert.dist = Float::INFINITY
 			vert.prev = nil
 		end
 
+		# Set the distance of the start vertice as 0
 		@verts[source].dist = 0
 
+		# Evaluate all vertice on the queue while queue is not empty
 		until queue.empty?
 			route = queue.min_by {|vertex| vertex.dist}
 			break if route.dist == Float::INFINITY
 
+			# Print the trace of each vertex evaluate 
 			puts route
 
 			queue.delete(route)
@@ -58,7 +67,11 @@ class Graph
 		@dijkstra_source = source
 	end
 
+	# The main of the class...
+	# Gets the start point and the final or stop point
+	# Return the best and efficient path and the total distance of the path
 	def shortest_path(source, target)
+		# Call dijkstra!, Create the path array and rename the target variable
 		dijkstra(source)
 		path = []
 		u = target
@@ -68,6 +81,7 @@ class Graph
 			u = @verts[u].prev
 		end
 
+		# Return path and distance of path
 		return path, @verts[target].dist
 	end
 end
@@ -115,8 +129,8 @@ end
 # Create a new Graph from the Arcs Array
 g = Graph.new( ArrArc )
 
-
 start, stop = 309026269, 3585942806
+
 path, dist = g.shortest_path(start, stop)
 
 # Exits to console
@@ -130,7 +144,7 @@ puts ""
 
 # Call the link of Google Maps! or an exception if not is possible
 if (path.size < 20)
-	mapLink(path, HashVert)
+	#mapLink(path, HashVert)
 else
 	puts "Exception: The path has more of 20 points, Google not support this petition"
 end
